@@ -8,6 +8,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 import javafx.stage.Stage;
 
@@ -24,11 +25,9 @@ public class Thread {
     @FXML
     private Circle big_target;
     @FXML
-    AnchorPane arrow;
+    Line arrow;
     @FXML
     AnchorPane game_bar;
-    @FXML
-    Polygon arrowhead;
     public int player_counter ;
     public int shot_counter ;
     private boolean isHit = false;
@@ -40,8 +39,10 @@ public class Thread {
 
     @FXML
     void startGame(ActionEvent event) throws Exception {
-        shot_count.setText("" + player_counter);
-        player_count.setText("" + shot_counter);
+        shot_counter = 0;
+        player_counter = 0;
+        shot_count.setText("" + shot_counter);
+        player_count.setText("" + player_counter);
         new java.lang.Thread(
                 () -> {
                     while (true)
@@ -73,8 +74,8 @@ public class Thread {
     }
     @FXML
     void stopGame(ActionEvent event) throws Exception {
-        shot_count.setText("" + player_counter);
-        player_count.setText("" + shot_counter);
+        shot_count.setText("" + shot_counter);
+        player_count.setText("" + player_counter);
     }
     @FXML
     void arrowShot(ActionEvent event) throws Exception {
@@ -90,30 +91,35 @@ public class Thread {
                                 () ->
                                 {
                                     arrow.setLayoutX(arrow.getLayoutX() + arrowSpeed);
-                                    double centerX = arrowhead.getLayoutX(); // X-координата центра arrowhead
-                                    double centerY = arrowhead.getLayoutY(); // Y-координата центра arrowhead
-                                    double bigCenterX = big_target.getLayoutX(); // X-координата центра big_target
-                                    double bigCenterY = big_target.getLayoutY(); // Y-координата центра big_target
-                                    double smallCenterX = small_target.getLayoutX(); // X-координата центра small_target
-                                    double smallCenterY = small_target.getLayoutY(); // Y-координата центра small_target
-                                    double distance_big = Math.sqrt(Math.pow(centerX - bigCenterX, 2) + Math.pow(centerY - bigCenterY, 2));
-                                    System.out.println(distance_big);
-                                    if (distance_big <= big_target.getRadius()+ 5) {
+                                    double bigTargetCenterX = big_target.getBoundsInParent().getMinX() + big_target.getBoundsInParent().getWidth() / 2;
+                                    double bigTargetCenterY = big_target.getBoundsInParent().getMinY() + big_target.getBoundsInParent().getHeight() / 2;
+                                    double smallTargetCenterX = small_target.getBoundsInParent().getMinX() + small_target.getBoundsInParent().getWidth() / 2;
+                                    double smallTargetCenterY = small_target.getBoundsInParent().getMinY() + small_target.getBoundsInParent().getHeight() / 2;
+                                    double arrowCenterX = arrow.getBoundsInParent().getMinX() + arrow.getBoundsInParent().getWidth() / 2;
+                                    double arrowCenterY = arrow.getBoundsInParent().getMinY() + arrow.getBoundsInParent().getHeight() / 2;
+                                    double bigTargetRadius = Math.min(big_target.getBoundsInParent().getWidth(), big_target.getBoundsInParent().getHeight()) / 2;
+                                    double smallTargetRadius = Math.min(small_target.getBoundsInParent().getWidth(), small_target.getBoundsInParent().getHeight()) / 2;
+
+                                    if (Math.pow(arrowCenterX - bigTargetCenterX, 2) + Math.pow(arrowCenterY - bigTargetCenterY, 2) <= Math.pow(bigTargetRadius, 2)) {
                                         player_counter++;
                                         player_count.setText("" + player_counter);
+                                        arrow.setLayoutX(115);
+                                        arrow.setLayoutY(154);
                                         isHit = true;
                                     }
-                                    double distance_small = Math.sqrt(Math.pow(centerX - smallCenterX, 2) + Math.pow(centerY - smallCenterY, 2)); // Расстояние между центрами
-                                    if (distance_small <= small_target.getRadius()+ 5) {
+
+                                    if (Math.pow(arrowCenterX - smallTargetCenterX, 2) + Math.pow(arrowCenterY - smallTargetCenterY, 2) <= Math.pow(smallTargetRadius, 2)) {
                                         System.out.println("Стрела попала в круг!");
                                         player_counter += 2;
                                         player_count.setText("" + player_counter);
+                                        arrow.setLayoutX(115);
+                                        arrow.setLayoutY(154);
                                         isHit = true;
                                     }
-                                    if(arrow.getLayoutX() >= 195){
+                                    if(arrow.getLayoutX() >= 395){
                                         isHit = true;
-                                        arrow.setLayoutX(-84);
-                                        arrow.setLayoutY(0);
+                                        arrow.setLayoutX(115);
+                                        arrow.setLayoutY(154);
 
                                     }
                                     shot_count.setText("" + shot_counter);

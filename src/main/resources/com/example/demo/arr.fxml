@@ -5,7 +5,7 @@
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.demo.Thread">
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.demo.Thread">
    <children>
       <AnchorPane layoutY="-1.0" prefHeight="308.0" prefWidth="88.0" style="-fx-border-width: 2px; -fx-border-color: black; -fx-background-color: yellow;">
          <children>
@@ -48,12 +48,7 @@
             <Line endX="69.0" endY="-70.00001525878906" layoutX="242.0" layoutY="56.0" startX="69.0" startY="235.00003051757812" />
             <Circle fx:id="small_target" fill="#ff1f1f" layoutX="311.0" layoutY="155.0" radius="16.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="5.0" />
             <Circle fx:id="big_target" fill="#ff1f2d" layoutX="236.0" layoutY="155.0" radius="24.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="5.0" />
-            <AnchorPane fx:id="arrow" layoutX="-84.0" maxHeight="119.0" maxWidth="78.0" prefHeight="119.0" prefWidth="78.0" style="-fx-max-width: 50; -fx-max-height: 50;">
-               <children>
-                  <Line endX="-41.0" endY="-1.52587890625E-5" layoutX="197.0" layoutY="154.0" startX="-95.0" strokeWidth="3.0" />
-                  <Polygon fx:id="arrowhead" fill="#ff1f3c" layoutX="166.0" layoutY="117.0" points="-21.0, 28.499984741210938, -21.0, 46.49998474121094, 2.0, 37.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="2.0" />
-               </children>
-            </AnchorPane>
+            <Line fx:id="arrow" endX="-32.5" layoutX="115.0" layoutY="154.0" startX="-100.0" strokeWidth="4.0" />
          </children>
       </AnchorPane>
    </children>
