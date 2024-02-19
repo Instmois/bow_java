@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.demo.Thread">
+   <children>
+      <AnchorPane layoutY="-1.0" prefHeight="308.0" prefWidth="88.0" style="-fx-border-width: 2px; -fx-border-color: black; -fx-background-color: yellow;">
+         <children>
+            <Polygon fill="DODGERBLUE" layoutX="84.0" layoutY="173.0" points="-57.0, -54.0, -57.0, 42.0, -23.0, -3.0" stroke="BLACK" strokeType="INSIDE" />
+         </children>
+      </AnchorPane>
+      <AnchorPane layoutY="305.0" prefHeight="96.0" prefWidth="451.0" style="-fx-border-color: black; -fx-border-width: 2px;">
+         <children>
+            <Button fx:id="start_game" layoutX="254.0" layoutY="29.0" mnemonicParsing="false" onAction="#startGame" prefHeight="32.0" prefWidth="103.0" text="Начало игры" />
+            <Button fx:id="stop" layoutX="118.0" layoutY="29.0" mnemonicParsing="false" onAction="#stopGame" prefHeight="32.0" prefWidth="114.0" text="Остановить игру" />
+            <Button fx:id="attack" layoutX="23.0" layoutY="29.0" mnemonicParsing="false" onAction="#arrowShot" prefHeight="32.0" prefWidth="78.0" text="Выстрел" />
+         </children>
+      </AnchorPane>
+      <AnchorPane layoutX="450.0" prefHeight="401.0" prefWidth="150.0" style="-fx-border-color: black;">
+         <children>
+            <Label layoutX="8.0" layoutY="30.0" text="Счёт игрока:">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+            </Label>
+            <Label fx:id="player_count" layoutX="128.0" layoutY="34.0" text="0">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+            <Label layoutX="13.0" layoutY="79.0" text="Выстрелов:">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+            </Label>
+            <Label fx:id="shot_count" layoutX="128.0" layoutY="82.0" text="0">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+         </children></AnchorPane>
+      <AnchorPane fx:id="game_bar" layoutX="88.0" layoutY="14.0" prefHeight="308.0" prefWidth="363.0" style="-fx-border-width: 0; -fx-border-color: black;">
+         <children>
+            <Line endX="16.0" endY="265.0000305175781" layoutX="220.0" layoutY="26.0" startX="16.0" startY="-40.00001525878906" />
+            <Line endX="69.0" endY="-70.00001525878906" layoutX="242.0" layoutY="56.0" startX="69.0" startY="235.00003051757812" />
+            <Circle fx:id="small_target" fill="#ff1f1f" layoutX="311.0" layoutY="155.0" radius="16.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="5.0" />
+            <Circle fx:id="big_target" fill="#ff1f2d" layoutX="236.0" layoutY="155.0" radius="24.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="5.0" />
+            <AnchorPane fx:id="arrow" layoutX="-84.0" maxHeight="119.0" maxWidth="78.0" prefHeight="119.0" prefWidth="78.0" style="-fx-max-width: 50; -fx-max-height: 50;">
+               <children>
+                  <Line endX="-41.0" endY="-1.52587890625E-5" layoutX="197.0" layoutY="154.0" startX="-95.0" strokeWidth="3.0" />
+                  <Polygon fx:id="arrowhead" fill="#ff1f3c" layoutX="166.0" layoutY="117.0" points="-21.0, 28.499984741210938, -21.0, 46.49998474121094, 2.0, 37.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="2.0" />
+               </children>
+            </AnchorPane>
+         </children>
+      </AnchorPane>
+   </children>
+</AnchorPane>
