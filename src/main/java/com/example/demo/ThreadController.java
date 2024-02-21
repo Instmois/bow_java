@@ -1,6 +1,5 @@
 package com.example.demo;
 
-import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -9,10 +8,8 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
-import javafx.scene.shape.Polygon;
-import javafx.stage.Stage;
 
-public class Thread {
+public class ThreadController {
 
     @FXML
     private Button start_game;
@@ -83,7 +80,7 @@ public class Thread {
         shot_count.setText("" + shot_counter);
 
         isHit = false;
-        new java.lang.Thread(
+        new Thread(
                 () -> {
                     while (!isHit)
                     {
@@ -97,10 +94,8 @@ public class Thread {
                                     double smallTargetCenterY = small_target.getBoundsInParent().getMinY() + small_target.getBoundsInParent().getHeight() / 2;
                                     double arrowCenterX = arrow.getBoundsInParent().getMinX() + arrow.getBoundsInParent().getWidth() / 2;
                                     double arrowCenterY = arrow.getBoundsInParent().getMinY() + arrow.getBoundsInParent().getHeight() / 2;
-                                    double bigTargetRadius = Math.min(big_target.getBoundsInParent().getWidth(), big_target.getBoundsInParent().getHeight()) / 2;
-                                    double smallTargetRadius = Math.min(small_target.getBoundsInParent().getWidth(), small_target.getBoundsInParent().getHeight()) / 2;
 
-                                    if (Math.pow(arrowCenterX - bigTargetCenterX, 2) + Math.pow(arrowCenterY - bigTargetCenterY, 2) <= Math.pow(bigTargetRadius, 2)) {
+                                    if (Math.pow(arrowCenterX - bigTargetCenterX, 2) + Math.pow(arrowCenterY - bigTargetCenterY, 2) <= Math.pow(big_target.getRadius(), 2)) {
                                         player_counter++;
                                         player_count.setText("" + player_counter);
                                         arrow.setLayoutX(115);
@@ -108,7 +103,7 @@ public class Thread {
                                         isHit = true;
                                     }
 
-                                    if (Math.pow(arrowCenterX - smallTargetCenterX, 2) + Math.pow(arrowCenterY - smallTargetCenterY, 2) <= Math.pow(smallTargetRadius, 2)) {
+                                    if (Math.pow(arrowCenterX - smallTargetCenterX, 2) + Math.pow(arrowCenterY - smallTargetCenterY, 2) <= Math.pow(small_target.getRadius(), 2)) {
                                         System.out.println("Стрела попала в круг!");
                                         player_counter += 2;
                                         player_count.setText("" + player_counter);
