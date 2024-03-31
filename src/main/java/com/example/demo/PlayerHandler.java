@@ -2,6 +2,7 @@ package com.example.demo;
 
 import java.io.*;
 import java.net.Socket;
+import java.sql.SQLException;
 
 import static com.example.demo.GameServer.gson;
 
@@ -11,7 +12,6 @@ public class PlayerHandler extends Thread {
     private final DataInputStream in;
     private final DataOutputStream out;
     private PlayerInfo playerInfo;
-
     public PlayerHandler(GameServer server, Socket socket) throws IOException {
         gameServer = server;
         clientSocket = socket;
@@ -20,18 +20,16 @@ public class PlayerHandler extends Thread {
         setDaemon(true);
         start();
     }
-
     @Override
     public void run() {
         try {
             checkingPlayers();
             handlingMessage();
-        } catch (IOException e) {
+        } catch (IOException | SQLException e) {
             stopConnection();
         }
     }
-
-    private void checkingPlayers() throws IOException {
+    private void checkingPlayers() throws IOException, SQLException {
         String nickname = in.readUTF();
         while (gameServer.containsNickname(nickname)) {
             out.writeUTF(nickname + " is already in use.");
@@ -42,9 +40,9 @@ public class PlayerHandler extends Thread {
             nickname = in.readUTF();
         }
         out.writeUTF("OK");
+        //UserDao.addUser(nickname);
         gameServer.addPlayer(nickname, this);
     }
-
     private void handlingMessage() throws IOException {
         while (true) {
             String msg = in.readUTF();
@@ -67,7 +65,6 @@ public class PlayerHandler extends Thread {
             }
         }
     }
-
     private void stopConnection() {
         try {
             clientSocket.close();
@@ -77,7 +74,6 @@ public class PlayerHandler extends Thread {
             gameServer.removePlayer(this);
         }
     }
-
     public void sendMessage(String msg) {
         try {
             out.writeUTF(msg);
@@ -85,11 +81,9 @@ public class PlayerHandler extends Thread {
             stopConnection();
         }
     }
-
     public PlayerInfo getPlayerInfo() {
         return playerInfo;
     }
-
     public void setPlayerInfo(PlayerInfo playerInfo) {
         this.playerInfo = playerInfo;
     }

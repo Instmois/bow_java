@@ -12,5 +12,6 @@ public record Action(Type type, String info) {
         Reset,
         Remove,
         Stop,
+        GET_LEADERBOARD,
     }
 }

@@ -28,7 +28,6 @@ public class WelcomeController {
             throw new RuntimeException(e);
         }
     }
-
     @FXML
     private void onConnectButtonClick() {
         try {

@@ -4,6 +4,8 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.sql.SQLException;
+import java.util.List;
 
 import static com.example.demo.GameClient.gson;
 
@@ -29,7 +31,9 @@ public class ServerHandler extends Thread{
             requestGameInfo();
             handlingMessage();
         } catch (IOException e) {
-            throw new RuntimeException();
+            throw new RuntimeException(e);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         } finally {
             downHandler();
         }
@@ -40,8 +44,7 @@ public class ServerHandler extends Thread{
         GameInfo gameInfo = gson.fromJson(jsonInfo, GameInfo.class);
         gameClient.setGameInfo(gameInfo);
     }
-
-    private void handlingMessage() throws IOException {
+    private void handlingMessage() throws IOException, SQLException {
         while (true) {
             String msg = in.readUTF();
             Action action = gson.fromJson(msg, Action.class);
@@ -58,7 +61,6 @@ public class ServerHandler extends Thread{
             }
         }
     }
-
     private void downHandler() {
         try {
             clientSocket.close();

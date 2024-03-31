@@ -2,20 +2,28 @@ package com.example.demo;
 
 import com.google.gson.Gson;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
+import javafx.stage.Stage;
 
 import java.io.*;
 import java.net.Socket;
+import java.sql.SQLException;
+import java.util.List;
 
 public class GameClient {
     @FXML
@@ -35,15 +43,14 @@ public class GameClient {
     public void connectServer(Socket socket, DataInputStream dataInputStream, DataOutputStream dataOutputStream) {
         serverHandler = new ServerHandler(this, socket, dataInputStream, dataOutputStream);
     }
-
     @FXML
     void startGame() {
         if (state == GameState.OFF) {
             String jsonStart = gson.toJson(Action.Type.WantToStart);
             serverHandler.sendMessage(jsonStart);
+
         }
     }
-
     @FXML
     void stopGame() {
         if (state != GameState.OFF) {
@@ -51,7 +58,6 @@ public class GameClient {
             serverHandler.sendMessage(json);
         }
     }
-
     @FXML
     void arrowShot() {
         if (state == GameState.ON) {
@@ -59,13 +65,15 @@ public class GameClient {
             serverHandler.sendMessage(json);
         }
     }
-
+    @FXML
+    private void showLeader() throws SQLException {
+        showLeaderboard();
+    }
     public void setGameInfo(final GameInfo gameInfo) {
         for (PlayerInfo p : gameInfo.playerList) {
             addPlayer(p);
         }
     }
-
     public void addPlayer(final PlayerInfo p) {
         Platform.runLater(() -> {
             Polygon triangle = new Polygon(-57.0, -33.0, -57.0, 22.0, -16.0, -5.0);
@@ -94,7 +102,20 @@ public class GameClient {
             shotsCount.setTextFill(Color.valueOf("#4c4f69"));
             shotsCount.setId(p.username + "ShotsCount");
 
-            VBox pane = new VBox( score, scoreCount, shots, shotsCount);
+            Label wins = new Label(p.username + " wins:");
+            wins.setTextFill(Color.valueOf("#4c4f69"));
+            wins.setId(p.username + "Wins");
+            Label winsCount = null;
+            try {
+                 winsCount = new Label(String.valueOf(UserDao.getWinsByUsername(p.username)));
+                 p.wins = UserDao.getWinsByUsername(p.username);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+            winsCount.setTextFill(Color.valueOf("#4c4f69"));
+            winsCount.setId(p.username + "WinsCount");
+
+            VBox pane = new VBox( score, scoreCount, shots, shotsCount, wins, winsCount);
             pane.setBorder(Border.stroke(Color.valueOf("#4c4f69")));
             pane.setAlignment(Pos.CENTER);
             pane.setId(p.username + "VBox");
@@ -105,12 +126,10 @@ public class GameClient {
     private Polygon findTriangle(final String nickname) {
         return (Polygon) gameBar.getScene().lookup("#" + nickname + "Triangle");
     }
-
     public void setPlayerWantToStart(final String nickname) {
         Polygon playerTriangle = findTriangle(nickname);
         playerTriangle.setStroke(Color.BLACK);
     }
-
     public void updateGameInfo(final GameInfo gameInfo) {
         Platform.runLater(() -> {
             bigTarget.setLayoutY(gameInfo.bigTarget.y);
@@ -130,7 +149,6 @@ public class GameClient {
             }
         });
     }
-
     private Arrow createArrow(final PlayerInfo p) {
         Arrow arrow = new Arrow(0, 0.0, 45, 0.0, 7.0);
         arrow.setLayoutX(5);
@@ -139,51 +157,52 @@ public class GameClient {
         gameBar.getChildren().add(arrow);
         return arrow;
     }
-
     private Arrow findArrow(final String nickname) {
         return (Arrow) gameBar.getScene().lookup("#" + nickname + "Arrow");
     }
-
     private void removeArrow(final Arrow arrow) {
         gameBar.getChildren().remove(arrow);
     }
-
     private Label findScoreCountLabel(final String nickname) {
         return (Label) gameBar.getScene().lookup("#" + nickname + "ScoreCount");
     }
-
     private void setScore(final PlayerInfo p) {
         final Label scoreLabel = findScoreCountLabel(p.username);
         scoreLabel.setText(String.valueOf(p.score));
     }
-
     private Label findShotsCountLabel(final String nickname) {
+        System.out.println((Label) gameBar.getScene().lookup("#" + nickname + "ShotsCount"));
         return (Label) gameBar.getScene().lookup("#" + nickname + "ShotsCount");
     }
-
+    private Label findWinsCountLabel(final String nickname) {
+        System.out.println((Label) gameBar.getScene().lookup("#" + nickname + "WinsCount"));
+        return (Label) gameBar.getScene().lookup("#" + nickname + "WinsCount");
+    }
     public void setShots(final PlayerInfo playerInfo) {
         Label shotsLabel = findShotsCountLabel(playerInfo.username);
         shotsLabel.setText(String.valueOf(playerInfo.shots));
     }
-
+    public void setWins(final PlayerInfo playerInfo) {
+        Label winsLabel = findWinsCountLabel(playerInfo.username);
+        winsLabel.setText(String.valueOf(playerInfo.wins));
+    }
     public void updatePlayerWantToPause(final String playerColor) {
         Polygon playerTriangle = findTriangle(playerColor);
         if (playerTriangle.getStroke() == Color.BLACK) playerTriangle.setStroke(Color.RED);
         else playerTriangle.setStroke(Color.BLACK);
     }
-
     public void setState(final GameState state) {
         this.state = state;
     }
-
     public void showWinner(final PlayerInfo p) {
         Platform.runLater(() -> {
+            Label winsLabel = findWinsCountLabel(p.username);
+            winsLabel.setText(String.valueOf(p.wins));
             String info = "Congratulations to " + p.username + "!\n" + p.username + " won with " + p.score + " score.";
             Alert alert = new Alert(Alert.AlertType.INFORMATION, info);
             alert.show();
         });
     }
-
     public void resetGameInfo(final GameInfo gameInfo) {
         Platform.runLater(() -> {
             bigTarget.setLayoutY(gameInfo.bigTarget.y);
@@ -191,12 +210,12 @@ public class GameClient {
             for (PlayerInfo p : gameInfo.playerList) {
                 setShots(p);
                 setScore(p);
+                setWins(p);
                 gameBar.getChildren().remove(findArrow(p.username));
                 findTriangle(p.username).setStroke(Color.TRANSPARENT);
             }
         });
     }
-
     public void removePlayer(final String nickname) {
         Platform.runLater(() -> {
             gameBar.getChildren().remove(findArrow(nickname));
@@ -204,17 +223,28 @@ public class GameClient {
             playersInfoMenu.getChildren().remove(findVBox(nickname));
         });
     }
-
     private VBox findVBox(final String nickname) {
         return (VBox) gameBar.getScene().lookup("#" + nickname + "VBox");
     }
-
     public void showStop() {
         Platform.runLater(() -> {
             String info = "The game was stopped";
             Alert alert = new Alert(Alert.AlertType.WARNING, info);
             alert.show();
         });
+    }
+    public void showLeaderboard() throws SQLException {
+        TableView<PlayerInfo> tableView = new TableView<>();
+        TableColumn<PlayerInfo, String> usernameColumn = new TableColumn<>("Username");
+        usernameColumn.setCellValueFactory(new PropertyValueFactory<>("username"));
+        TableColumn<PlayerInfo, Integer> winsColumn = new TableColumn<>("Wins");
+        winsColumn.setCellValueFactory(new PropertyValueFactory<>("wins"));
+        tableView.getColumns().addAll(usernameColumn, winsColumn);
+        List<PlayerInfo> leaderboard = UserDao.getLeaderboard();
+        tableView.setItems(FXCollections.observableArrayList(leaderboard));
+        Stage stage = new Stage();
+        stage.setScene(new Scene(tableView));
+        stage.show();
     }
 }
 
