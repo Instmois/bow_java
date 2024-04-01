@@ -66,7 +66,11 @@ public class GameServer {
         while (containsColor(color)) color = colors[rand.nextInt(colors.length)];
 
         PlayerInfo newPlayer = new PlayerInfo(nickname, color);
-        newPlayer.wins = UserDao.getWinsByUsername(newPlayer.username);
+        if(UserDao.isNicknameExists(newPlayer.username)) {
+            newPlayer.wins = UserDao.getWinsByUsername(newPlayer.username);
+        }else {
+            UserDao.addUser(nickname);
+        }
         gameInfo.playerList.add(newPlayer);
         handler.setPlayerInfo(newPlayer);
 
@@ -82,7 +86,7 @@ public class GameServer {
         }
         return false;
     }
-    private void sendNewPlayer(PlayerInfo p) throws IOException {
+    private void sendNewPlayer(PlayerInfo p) {
         String jsonPlayer = gson.toJson(p);
         Action action = new Action(Action.Type.New, jsonPlayer);
         String json = gson.toJson(action);
@@ -154,7 +158,6 @@ public class GameServer {
                 //winner.wins++;
             }
         }
-
         try {
             UserDao.updateWins(winner.username, winner.wins);
         } catch (SQLException e) {
